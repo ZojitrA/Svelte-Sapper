@@ -2,6 +2,7 @@
   import Button from '../UI/Button.svelte'
   import {Meetups} from '../stores/meetups.js'
   import {createEventDispatcher, onDestroy} from 'svelte'
+  import {fade, fly} from 'svelte/transition'
   export let id
 
   let dispatch = createEventDispatcher()
@@ -59,7 +60,7 @@
 
 </style>
 
-  <section>
+  <section in:fade={{duration:1200}} out:fly={{x:0, y:-500}}>
     <div class="image">
       <img src="{myMeetup.imageUrl}" alt="">
     </div>

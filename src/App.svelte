@@ -7,6 +7,7 @@ import Button from "./UI/Button.svelte";
 import {MeetupStore, Meetups} from "./stores/meetups.js"
 import Details from './Meetup/MeetupDetails.svelte'
 import {onDestroy} from 'svelte'
+import {tweened} from 'svelte/motion';
 
 
 
@@ -15,7 +16,6 @@ let meetups = []
 let meetId = null
 let editId = null
 let page = "overview";
-let filter = false
 
 let unsubscribe = Meetups.subscribe(data => {
   // if(filter === "active"){
@@ -30,13 +30,6 @@ onDestroy(()=>{
   unsubscribe()
 })
 
-function activateFilter(){
-  filter = true
-  // meetups = meetups.filter(meetup => meetup.isFavorite)
-}
-function disactivateFilter(){
-  filter = false
-}
 
 
 function saveMeetup(event){
@@ -86,20 +79,26 @@ function detailsPage(event){
     background-color: lightgrey;
   }
 
+  .spacer {
+    padding: 10px;
+    padding-left: 0px
+  }
 
 </style>
 
-
 <main>
 <Header/>
+
 {#if page === "overview"}
-  <Button caption="Add New Meetup" on:click={()=> {page = 'edit'}}/>
-  <Button {filter} caption="Favorites Only" on:click={activateFilter}/>
-  <Button filter={!filter} caption="AllMeetups" on:click={disactivateFilter}/>
-  <MeetupGrid on:edit={(event)=>{page='edit'; editId = event.detail}} on:showDetails={detailsPage} meetups={filter ? meetups.filter(meetup => meetup.isFavorite) : meetups}/>
+<div class="spacer">
+</div>
+
+
+  <MeetupGrid on:add={()=>{page='edit'}} on:edit={(event)=>{page='edit'; editId = event.detail}} on:showDetails={detailsPage} meetups={meetups}/>
 
 {:else if page === "edit"}
-  <AddMeetup id={editId} on:delete={deleteMeetup} on:cancel={()=>{page = "overview"}} on:saveMeetup={saveMeetup}/>
+
+<AddMeetup id={editId} on:delete={deleteMeetup} on:cancel={()=>{page = "overview"}} on:saveMeetup={saveMeetup}/>
 
 {:else if page === "details"}
   <Details on:close={()=>{page = "overview"}} id={meetId}/>

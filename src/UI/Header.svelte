@@ -9,7 +9,7 @@
     top: 0;
     left: 0;
     height: 4rem;
-    background: rgba(207, 0, 86, 0.75);
+    background: rgba(207, 0, 86, 1);
     display: flex;
     justify-content: center;
     align-items: center;

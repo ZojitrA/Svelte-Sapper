@@ -1,4 +1,5 @@
 <script>
+
   export let type = null
   export let caption = null
   export let ref = null

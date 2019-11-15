@@ -4,6 +4,9 @@
   import Badge from "../UI/Badge.svelte";
   import {MeetupStore} from '../stores/meetups.js'
   import {createEventDispatcher} from 'svelte'
+  import {fade, fly} from 'svelte/transition'
+  import {flip} from 'svelte/animate'
+
   export let title
   export let subtitle
   export let imageUrl
@@ -77,15 +80,19 @@
   div {
     text-align: right;
   }
+
 </style>
 
-<article>
+<article transition:fly={{x:0, y:200}} >
   <header>
+
     <h1>{title}
-    {#if isFavorite}
-    <Badge>FAVORITE</Badge>
-    {/if}
-    </h1>
+      {#if isFavorite}
+      <Badge/>
+      {/if}
+      </h1>
+
+
     <h2>{subtitle}</h2>
     <p>{address}</p>
   </header>
