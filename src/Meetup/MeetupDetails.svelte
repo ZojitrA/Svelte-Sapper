@@ -68,7 +68,7 @@
       <h2>{myMeetup.subtitle}</h2>
       <p>{myMeetup.description}</p>
       <Button ref="mailto:{myMeetup.email}" caption="{myMeetup.email}"/>
-      <Button type="button" on:click='{() => dispatch("close")}' caption="Close"/>
+      <Button type="button" on:click={() => dispatch("close")} caption="Close"/>
 
     </div>
   </section>
