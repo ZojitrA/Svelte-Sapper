@@ -4,7 +4,7 @@
   export let ref = null
   export let mode = null
   export let isFavorite = true
-
+  export let filter = false
 </script>
 
 <style>
@@ -84,12 +84,15 @@
   .outline.success:active {
   background: #c2ffd1;
   }
+  .filter {
+    background-color: lightgrey
+  }
 </style>
 
 {#if ref}
 
 <a href="{ref}">{caption}</a>
 {:else}
-<button class="{mode} {isFavorite ? "" : "success"}" type="{type}" on:click>{caption}</button>
+<button class="{mode} {isFavorite ? "" : "success"}" disabled={filter} type="{type}" on:click>{caption}</button>
 
 {/if}

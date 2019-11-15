@@ -4,60 +4,66 @@ import MeetupGrid from "./Meetup/MeetupGrid.svelte";
 import AddMeetup from "./Meetup/AddMeetup.svelte";
 import TextInput from "./UI/TextInput.svelte";
 import Button from "./UI/Button.svelte";
-
+import {MeetupStore, Meetups} from "./stores/meetups.js"
+import Details from './Meetup/MeetupDetails.svelte'
+import {onDestroy} from 'svelte'
 
 
 
 let edit;
+let meetups = []
+let meetId = null
+let editId = null
+let page = "overview";
+let filter = "inactive"
 
-let meetups = [
-  {
-    id:'m1',
-    title: 'coding camp',
-    subtitle: 'learn to code in hours not days',
-    description: "what",
-    imageUrl: "",
-    address: "27th Nerd Road, New York NY, 11001",
-    email: "blah@blah.com",
-    isFavorite: false
-  },
-  {
-    id:'m2',
-    title: 'butt camp',
-    subtitle: 'learn to butt',
-    description: "butt",
-    imageUrl: "",
-    address: "69 butt Road, Boston MA, 11001",
-    email: "butt@butt.com",
-    isFavorite: false
+let unsubscribe = Meetups.subscribe(data => {
+  if(filter === "active"){
+    meetups = data.filter(meetup => meetup.isFavorite)
+  }else{
+
+    meetups = data
   }
-]
+})
 
-function toggleFavorite(event){
-  const id = event.detail.id;
-  let toUpdate = {...meetups.find(m => m.id === id)}
-  toUpdate.isFavorite = !toUpdate.isFavorite
-  let idx = meetups.findIndex(m => m.id === id)
-  let updatedMeetups = [...meetups]
-  updatedMeetups[idx] = toUpdate
-  meetups = updatedMeetups
+onDestroy(()=>{
+  unsubscribe()
+})
+
+function activateFilter(){
+  filter = "active"
+  meetups = meetups.filter(meetup => meetup.isFavorite)
 }
 
-function addMeetup(event){
-  var {id, title, subtitle, description, imageUrl, email, address} = event.detail
-  const newMeetup ={
-    id: Math.random().toString(),
-    title: title,
-    subtitle: subtitle,
-    description: description,
-    imageUrl: imageUrl,
-    email: email,
-    address: address
+
+function saveMeetup(event){
+  let deets = event.detail
+  if(deets.id){
+    MeetupStore.editMeetup((deets))
+  }else{
+
+    MeetupStore.addMeetup(deets)
   }
 
-  meetups = [newMeetup, ...meetups]
-  edit = false
+
+  // meetups = [newMeetup, ...meetups]
+  page = "overview"
+  editId = null
 }
+
+function deleteMeetup(event){
+  let id = event.detail
+  MeetupStore.deleteMeetup(id)
+  page = "overview"
+  editId = null
+}
+
+function detailsPage(event){
+  page = "details"
+  meetId = event.detail
+}
+
+
 
 
 
@@ -73,17 +79,27 @@ function addMeetup(event){
     /* margin-bottom: 5rem; */
   }
 
+  .active {
+    background-color: lightgrey;
+  }
 
 
 </style>
 
-<Header/>
 
 <main>
-<Button caption="Add New Meetup" on:click={()=> {edit = true}}/>
-{#if !edit}
-<MeetupGrid {meetups} on:togglefavorite={toggleFavorite}/>
-{:else}
-<AddMeetup on:cancel={()=>{edit=false}} on:saveMeetup={addMeetup}/>
- {/if}
+<Header/>
+{#if page === "overview"}
+  <Button caption="Add New Meetup" on:click={()=> {page = 'edit'}}/>
+  <Button filter={filter === "active"} caption="Favorites Only" on:click={activateFilter}/>
+  <MeetupGrid on:edit={(event)=>{page='edit'; editId = event.detail}} on:showDetails={detailsPage} meetups={meetups}/>
+
+{:else if page === "edit"}
+  <AddMeetup id={editId} on:delete={deleteMeetup} on:cancel={()=>{page = "overview"}} on:saveMeetup={saveMeetup}/>
+
+{:else if page === "details"}
+  <Details on:close={()=>{page === "overview"}} id={meetId}/>
+<!-- {:else if page === 'edit'}
+  <AddMeetup on:delete={deleteMeetup} editMode="true" id={editId} on:cancel={()=>{page = "overview"}} on:saveMeetup={editMeetup}/> -->
+{/if}
 </main>
