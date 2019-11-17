@@ -70,19 +70,19 @@ form {
 
 <Modal title='{id ? "Edit Meatup." : "Add Meatup."}' on:cancel>
   <div>
-  <form on:submit|preventDefault={submitMeetup}>
+  <div>
     <TextInput validity={titleValidity} type="title" id="title" label="Title" value={title} on:input={(e) => title = e.target.value}/>
     <TextInput validity={subtitleValidity} type="subtitle" id="subtitle" label="Subtitle" value={subtitle} on:input={(e) => subtitle = e.target.value}/>
     <TextInput validity={addressValidity} type="address" id="address" label="Address" value={address} on:input={(e) => address = e.target.value}/>
     <TextInput validity={imageUrlValidity} type="imageUrl" id="imageUrl" label="Image Url" value={imageUrl} on:input={(e) => imageUrl = e.target.value}/>
     <TextInput validity={emailValidity} type="text" id="email" label="Email" value={email} on:input={(e) => email = e.target.value}/>
     <TextInput validity={descriptionValidity} cType="textarea" rows="3" id="description" label="Description" value={description} on:input={(e) => description = e.target.value}/>
-    <Button type="submit" caption="Save"/>
+    <Button on:click={submitMeetup} caption="Save"/>
     <Button caption="Cancel" on:click={()=>dispatch("cancel")}/>
     {#if id}
     <Button on:click={()=>dispatch("delete", id)} caption="Delete"/>
     {/if}
-  </form>
+  </div>
 
   </div>
 </Modal>

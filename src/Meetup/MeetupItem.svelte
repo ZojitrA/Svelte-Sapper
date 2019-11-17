@@ -2,7 +2,8 @@
 
   import Button from "../UI/Button.svelte";
   import Badge from "../UI/Badge.svelte";
-  import {MeetupStore} from '../stores/meetups.js'
+  import LoadingSpinner from "../UI/LoadingSpinner.svelte";
+  import {MeetupStore, Meetups} from '../stores/meetups.js'
   import {createEventDispatcher} from 'svelte'
   import {fade, fly} from 'svelte/transition'
   import {flip} from 'svelte/animate'
@@ -16,12 +17,25 @@
   export let id
   export let isFavorite
 
+  let loaded = true
+
 
   let dispatch = createEventDispatcher()
 
 
   function toggleFavorite(id){
-    MeetupStore.toggleFavorite(id)
+    loaded = false
+    fetch(`https://svelte-project-1.firebaseio.com/meetups/${id}/.json`, {
+      method: "PATCH",
+      body: JSON.stringify({isFavorite: !isFavorite}),
+      headers: {"Content-Type": "application/json"}
+    }).then(res => {
+      if(!res.ok){
+        throw new Error("Couldn't Favorite")
+      }
+      MeetupStore.toggleFavorite(id)
+      loaded = true
+    }).catch(err => console.log(err))
   }
 
 </script>
@@ -54,6 +68,7 @@
   }
 
   h1 {
+
     font-size: 1.25rem;
     margin: 0.5rem 0;
     font-family: "Roboto Slab", sans-serif;
@@ -81,6 +96,7 @@
     text-align: right;
   }
 
+
 </style>
 
 <article transition:fly={{x:0, y:200}} >
@@ -107,7 +123,9 @@
   <footer>
 
     <Button ref="mailto:{email}" caption="Contact"/>
+
     <Button type="button" {isFavorite} mode="outline" caption={isFavorite ? "Unfavorite" : "favorite"} on:click={()=>{toggleFavorite(id)}}/>
+
     <Button type="button" caption="Show Detail" on:click={() => dispatch("showDetails", id)}/>
     <Button caption="Edit Meetup" on:click={()=> dispatch("edit", id)}/>
   </footer>

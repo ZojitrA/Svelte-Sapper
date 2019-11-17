@@ -1,39 +1,26 @@
 import {writable} from 'svelte/store';
 
-export const Meetups = writable([
-  {
-    id:'m1',
-    title: 'coding camp',
-    subtitle: 'learn to code in hours not days',
-    description: "what",
-    imageUrl: "blah",
-    address: "27th Nerd Road, New York NY, 11001",
-    email: "blah@blah.com",
-    isFavorite: false
-  },
-  {
-    id:'m2',
-    title: 'butt camp',
-    subtitle: 'learn to butt',
-    description: "butt",
-    imageUrl: "blah",
-    address: "69 butt Road, Boston MA, 11001",
-    email: "butt@butt.com",
-    isFavorite: false
-  }
-])
+export const Meetups = writable([])
 
 export const MeetupStore = {
   subscribe: Meetups.subscribe,
   editMeetup: (deets)=>{
+    console.log("edit")
     Meetups.update(data => {
-    let idx = data.findIndex(m => m.id === deets.id)
-    let toEdit = {...data[idx], ...deets}
-    let updatedMeetups = [...data]
-    updatedMeetups[idx] = toEdit
-    return updatedMeetups
-  })
-  },
+    // let idx = data.findIndex(m => m.id === deets.id)
+    //
+    // let toEdit = {...data[idx], ...deets}
+    // let updatedMeetups = [...data]
+    // updatedMeetups[idx] = toEdit
+    // return updatedMeetups
+    return data.map(obj => {
+
+      if(obj.id === deets.id){
+        return {...obj, ...deets}
+      }
+    }
+  )
+})},
   deleteMeetup: (id)=>{
     Meetups.update(data => {
     let idx = data.findIndex(m => m.id === id)
@@ -42,15 +29,17 @@ export const MeetupStore = {
   })
   },
   addMeetup: (deets) => {
+    console.log(deets)
     var {id, title, subtitle, description, imageUrl, email, address} = deets
     const newMeetup ={
-      id: Math.random().toString(),
+      id: id,
       title: title,
       subtitle: subtitle,
       description: description,
       imageUrl: imageUrl,
       email: email,
-      address: address
+      address: address,
+      isFavorite: false
     }
     Meetups.update(data => [newMeetup, ...data])
   },
